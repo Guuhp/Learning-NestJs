@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Course {
+  id          String   @id
+  title       String
+  description String?
+  slug        String   @unique
+  trail_id    String
+  trails      trails   @relation(fields: [trail_id], references: [id])
+  Lesson      Lesson[]
+}
+
+model Lesson {
+  id          String  @id
+  title       String
+  description String?
+  slug        String  @unique
+  course_id   String
+  Course      Course  @relation(fields: [course_id], references: [id])
+}
+
+model enrollments {
+  id         String    @id
+  student_id String?
+  trail_id   String?
+  students   students? @relation(fields: [student_id], references: [id])
+  trails     trails?   @relation(fields: [trail_id], references: [id])
+}
+
+model students {
+  id          String        @id
+  name        String
+  email       String        @unique
+  created_At  DateTime      @default(now())
+  updated_At  DateTime
+  enrollments enrollments[]
+  trails      trails[]
+}
+
+model trails {
+  id          String        @id
+  title       String
+  description String?
+  slug        String        @unique
+  created_At  DateTime      @default(now())
+  updated_At  DateTime
+  studentId   String?
+  status      TrailStatus   @default(ACTIVE)
+  Course      Course[]
+  enrollments enrollments[]
+  students    students?     @relation(fields: [studentId], references: [id])
+}
+
+enum TrailStatus {
+  ACTIVE
+  INATIVE
+}

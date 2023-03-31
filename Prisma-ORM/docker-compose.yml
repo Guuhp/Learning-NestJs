@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  prisma_orm:
+    image: postgres:latest
+    container_name: prisma_orm
+    environment:
+      POSTGRES_PASSWORD: admin
+    ports:
+      - '5432:5432'
